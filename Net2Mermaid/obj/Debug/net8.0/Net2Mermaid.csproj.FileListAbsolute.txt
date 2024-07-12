@@ -1,0 +1,12 @@
+/Users/abdullahkeles/developer/projects/KlsHelper/Net2Mermaid/bin/Debug/net8.0/Net2Mermaid.deps.json
+/Users/abdullahkeles/developer/projects/KlsHelper/Net2Mermaid/bin/Debug/net8.0/Net2Mermaid.dll
+/Users/abdullahkeles/developer/projects/KlsHelper/Net2Mermaid/bin/Debug/net8.0/Net2Mermaid.pdb
+/Users/abdullahkeles/developer/projects/KlsHelper/Net2Mermaid/obj/Debug/net8.0/Net2Mermaid.GeneratedMSBuildEditorConfig.editorconfig
+/Users/abdullahkeles/developer/projects/KlsHelper/Net2Mermaid/obj/Debug/net8.0/Net2Mermaid.AssemblyInfoInputs.cache
+/Users/abdullahkeles/developer/projects/KlsHelper/Net2Mermaid/obj/Debug/net8.0/Net2Mermaid.AssemblyInfo.cs
+/Users/abdullahkeles/developer/projects/KlsHelper/Net2Mermaid/obj/Debug/net8.0/Net2Mermaid.csproj.CoreCompileInputs.cache
+/Users/abdullahkeles/developer/projects/KlsHelper/Net2Mermaid/obj/Debug/net8.0/Net2Mermaid.sourcelink.json
+/Users/abdullahkeles/developer/projects/KlsHelper/Net2Mermaid/obj/Debug/net8.0/Net2Mermaid.dll
+/Users/abdullahkeles/developer/projects/KlsHelper/Net2Mermaid/obj/Debug/net8.0/refint/Net2Mermaid.dll
+/Users/abdullahkeles/developer/projects/KlsHelper/Net2Mermaid/obj/Debug/net8.0/Net2Mermaid.pdb
+/Users/abdullahkeles/developer/projects/KlsHelper/Net2Mermaid/obj/Debug/net8.0/ref/Net2Mermaid.dll

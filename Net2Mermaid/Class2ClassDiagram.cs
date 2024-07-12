@@ -1,4 +1,9 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace Net2Mermaid;
@@ -10,21 +15,22 @@ public static class Class2ClassDiagram
     /// enttiti lerin yolunu alarak referand edilen namespace de arar. bulduğu class ları ve ilişkilerini mermaid diagrama dönüştürür.
     /// </summary>
     /// <param name="namespaceName">kök namespace</param>
-    /// <param name="namespaceEntities">namespace in alt path ini bekler. default value si '.Database.Entities'</param>
-    public static string GenerateString(string namespaceName, string namespaceEntities = ".Database.Entities")
+    /// <param name="namespaceEntities">namespace in alt path ini bekler. default value: 'Database.Entities' </param>
+    public static string GenerateString(string namespaceName, string namespaceEntities = "Database.Entities")
     {
+        System.Console.WriteLine(namespaceName + "." + namespaceEntities);
         var assembly = Assembly.Load(namespaceName);
         var types = assembly.GetTypes()
-            .Where(t => t.IsClass && t.Namespace.StartsWith(namespaceName + ".Database.Entities"))
+            // .Where(t => t.IsClass && t.Namespace == namespaceName + "." + namespaceEntities)
+            .Where(t => t.Namespace == namespaceName + "." + namespaceEntities)
                 .ToList();
-
         var sb = new StringBuilder();
         sb.AppendLine("```mermaid");
         sb.AppendLine("---");
-        sb.AppendLine($"title : {namespaceName}.Database.Entities UML Diagrams");
+        sb.AppendLine($"title : {namespaceName}.{namespaceEntities} UML Diagrams");
         sb.AppendLine("---");
         sb.AppendLine("classDiagram");
-        sb.AppendLine("direction RL");
+        if (namespaceEntities.Contains("Entities")) sb.AppendLine("direction RL");
 
         foreach (var type in types)
         {
@@ -34,10 +40,10 @@ public static class Class2ClassDiagram
             }
             else
             {
-                GenerateClassDiagram(sb, type, types);
+                GenerateClassDiagram(sb, type, types); GenerateInterfaceRelations(sb, type);
             }
 
-            GenerateInterfaceRelations(sb, type);
+
         }
 
         GenerateRelationships(sb, types);
@@ -56,16 +62,28 @@ public static class Class2ClassDiagram
     public static void GenerateMdFile(string? outputPath, string namespaceName, string namespaceEntities = ".Database.Entities")
     {
         outputPath = outputPath is null ? Path.Combine(Directory.GetCurrentDirectory(), $"{namespaceName}{namespaceEntities}.md") : Path.Combine(Directory.GetCurrentDirectory(), outputPath, $"{namespaceName}{namespaceEntities}.md");
-        File.WriteAllText(Path.Combine(Directory.GetCurrentDirectory(), outputPath), GenerateString(namespaceName, namespaceEntities));
+        System.IO.File.WriteAllText(Path.Combine(Directory.GetCurrentDirectory(), outputPath), GenerateString(namespaceName, namespaceEntities));
     }
     private static void GenerateEnumDiagram(StringBuilder sb, Type type)
     {
         sb.AppendLine($"class {type.Name} {{");
         sb.AppendLine("<<enumeration>>");
-        foreach (var value in Enum.GetNames(type))
+
+        foreach (var value in Enum.GetValues(type))
         {
-            sb.AppendLine($"  {value}");
+            string enumName = Enum.GetName(type, value);
+            string description = GetEnumDescription(type, enumName);
+
+            if (!string.IsNullOrEmpty(description))
+            {
+                sb.AppendLine($"  {enumName} : '{description}'");
+            }
+            else
+            {
+                sb.AppendLine($"  {enumName}");
+            }
         }
+
         sb.AppendLine("}");
     }
     private static void GenerateInterfaceRelations(StringBuilder sb, Type type)
@@ -117,7 +135,7 @@ public static class Class2ClassDiagram
     {
         sb.AppendLine($"class {type.Name} {{");
 
-        var properties = type.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+        var properties = type.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
         foreach (var prop in properties)
         {
             string visibility = prop.GetGetMethod(true)?.IsPublic == true ? "+" : "-";
@@ -157,5 +175,18 @@ public static class Class2ClassDiagram
         }
 
         return type.Name;
+    }
+
+    private static string GetEnumDescription(Type type, string enumName)
+    {
+        FieldInfo fi = type.GetField(enumName);
+        DescriptionAttribute[] attributes = (DescriptionAttribute[])fi.GetCustomAttributes(typeof(DescriptionAttribute), false);
+
+        if (attributes != null && attributes.Length > 0)
+        {
+            return attributes[0].Description;
+        }
+
+        return string.Empty;
     }
 }
